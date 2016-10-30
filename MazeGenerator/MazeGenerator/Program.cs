@@ -46,8 +46,12 @@ namespace MazeGenerator
 			//Int32.TryParse(Console.ReadLine(), out a);
 			//fin.Y = a * 2 + 1;
 			////==============Хардкооооод!!!===========================
-			tmpN = 30;
-			tmpM = 10;
+			int freeWidth = 10;
+			int wallWidth = 5;
+			int mazeWidth = 150;
+			int mazeHeigth = 300;
+			tmpN = mazeHeigth / (freeWidth + wallWidth);
+			tmpM = mazeWidth / (freeWidth + wallWidth);
 			N = 2 * tmpN + 1;
 			M = 2 * tmpM + 1;
 			int a = tmpN - 1;
@@ -58,8 +62,6 @@ namespace MazeGenerator
 			start.Y = b * 2 + 1;
 			fin.X = c * 2 + 1;
 			fin.Y = d * 2 + 1;
-			int freeWidth = 10;
-			int wallWidth = 5;
 			cur = start;
 			neigh = new List<Directions>();
 			GenerateMaze();
@@ -213,7 +215,7 @@ namespace MazeGenerator
 				}
 				for (int k = 0; k < (i % 2 == 1 ? freeWidth - 1 : filledWidth - 1); ++k)
 				{
-					res.Add(res[res.Count-1]);
+					res.Add(res[res.Count - 1]);
 				}
 			}
 			SaveAsPicture(res);
