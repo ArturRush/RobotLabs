@@ -46,11 +46,11 @@ namespace MazeGenerator
 			//Int32.TryParse(Console.ReadLine(), out a);
 			//fin.Y = a * 2 + 1;
 			////==============Хардкооооод!!!===========================
-			tmpN = 100;
-			tmpM = 100;
+			tmpN = 30;
+			tmpM = 10;
 			N = 2 * tmpN + 1;
 			M = 2 * tmpM + 1;
-			int a = 0;
+			int a = tmpN - 1;
 			int b = 0;
 			int c = tmpN - 1;
 			int d = tmpM - 1;
@@ -58,17 +58,20 @@ namespace MazeGenerator
 			start.Y = b * 2 + 1;
 			fin.X = c * 2 + 1;
 			fin.Y = d * 2 + 1;
+			int freeWidth = 10;
+			int wallWidth = 5;
 			cur = start;
 			neigh = new List<Directions>();
 			GenerateMaze();
 			//PrintMaze();
 			Console.WriteLine("Укажите имя лабиринта");
 			filePath = Console.ReadLine();
+			SaveToRoboLabs(freeWidth, wallWidth);
 			//Console.WriteLine("Укажите путь к файлу лабиринта");
 			//mazeFromFilePath = Console.ReadLine();
 			//MazeFromFile(mazeFromFilePath);
-			SaveAsPicture();
-			//SaveAsText();
+			//SaveAsPicture(maze);
+			//SaveAsText(maze);
 		}
 
 		static void GenerateMaze()
@@ -108,7 +111,6 @@ namespace MazeGenerator
 							break;
 					}
 					neigh.Clear();
-					//Console.Write("\r{0:##.000}% visited", 100 * ((float)visited.Count / (tmpN * tmpM)));
 				}
 				else
 					cur = path.Pop();
@@ -119,6 +121,7 @@ namespace MazeGenerator
 		{
 			maze = File.ReadAllLines(f).Select(l => l.Select(i => Int32.Parse(i.ToString())).ToList()).ToList();
 		}
+
 		//Строит решетку, на основе которой создается лабиринт
 		//Обозначения:
 		//0 - посещенная свободная для прохода клетка
@@ -135,8 +138,8 @@ namespace MazeGenerator
 				for (int j = 0; j < M; ++j)
 					maze[i].Add(i % 2 == 0 || j % 2 == 0 ? 1 : 5);
 			}
-			maze[start.Y][start.X] = 2;
-			maze[fin.Y][fin.X] = 5;
+			maze[start.X][start.Y] = 2;
+			maze[fin.X][fin.Y] = 5;
 		}
 
 		static void PrintMaze()
@@ -144,31 +147,31 @@ namespace MazeGenerator
 			for (int i = 0; i < N; ++i)
 			{
 				for (int j = 0; j < M; ++j)
-					Console.Write(maze[j][i]);
+					Console.Write(maze[i][j]);
 				Console.Write("\n");
 			}
 		}
 
-		static void SaveAsPicture()
+		static void SaveAsPicture(List<List<int>> mz)
 		{
-			Bitmap pic = new Bitmap(N, M);
+			Bitmap pic = new Bitmap(mz[0].Count, mz.Count);
 			using (var g = Graphics.FromImage(pic))
 				g.Clear(Color.White);
 
-			for (int i = 0; i < N; ++i)
+			for (int i = 0; i < mz.Count; ++i)
 			{
-				for (int j = 0; j < M; ++j)
+				for (int j = 0; j < mz[0].Count; ++j)
 				{
-					switch (maze[i][j])
+					switch (mz[i][j])
 					{
 						case 1:
-							pic.SetPixel(i, j, Color.Black);
+							pic.SetPixel(j, i, Color.Black);
 							break;
 						case 2:
-							pic.SetPixel(i, j, Color.GreenYellow);
+							pic.SetPixel(j, i, Color.GreenYellow);
 							break;
 						case 3:
-							pic.SetPixel(i, j, Color.Red);
+							pic.SetPixel(j, i, Color.Red);
 							break;
 					}
 				}
@@ -176,28 +179,54 @@ namespace MazeGenerator
 			pic.Save(filePath + ".png", ImageFormat.Png);
 		}
 
-		static void SaveAsText()
+		static void SaveAsText(List<List<int>> mz)
 		{
 			using (StreamWriter f =
 			new StreamWriter(filePath + ".txt"))
 			{
-				for (int i = 0; i < N; ++i)
+				f.Write(tmpN + " " + tmpM);
+				for (int i = 0; i < mz.Count; ++i)
 				{
-					for (int j = 0; j < M; ++j)
-						f.Write(maze[j][i]);
+					for (int j = 0; j < mz[0].Count; ++j)
+						f.Write(mz[j][i]);
 					f.Write("\n");
 				}
 			}
 		}
 
+		/// <summary>
+		/// Класс для сохранения лабиринта по спецификации лаб
+		/// </summary>
+		/// <param name="freeWidth">ширина прохода</param>
+		/// <param name="filledWidth">ширина стен</param>
+		static void SaveToRoboLabs(int freeWidth, int filledWidth)
+		{
+			List<List<int>> res = new List<List<int>>();
+
+			for (int i = 0; i < N; ++i)
+			{
+				res.Add(new List<int>());
+				for (int j = 0; j < M; ++j)
+				{
+					for (int k = 0; k < (j % 2 == 1 ? freeWidth : filledWidth); ++k)
+						res[res.Count - 1].Add(maze[i][j]);
+				}
+				for (int k = 0; k < (i % 2 == 1 ? freeWidth - 1 : filledWidth - 1); ++k)
+				{
+					res.Add(res[res.Count-1]);
+				}
+			}
+			SaveAsPicture(res);
+		}
+
 		static bool ml()
 		{
 			var tmp = new Point(cur.X - 2, cur.Y);
-			maze[cur.Y][cur.X - 1] = 0;
+			maze[cur.X - 1][cur.Y] = 0;
 			MadeVisited(tmp);
 			if (tmp == fin)
 			{
-				maze[tmp.Y][tmp.X - 2] = 3;
+				maze[tmp.X - 2][tmp.Y] = 3;
 				return false;
 			}
 			cur = tmp;
@@ -207,11 +236,11 @@ namespace MazeGenerator
 		static bool mr()
 		{
 			var tmp = new Point(cur.X + 2, cur.Y);
-			maze[cur.Y][cur.X + 1] = 0;
+			maze[cur.X + 1][cur.Y] = 0;
 			MadeVisited(tmp);
 			if (tmp == fin)
 			{
-				maze[cur.Y][cur.X + 2] = 3;
+				maze[cur.X + 2][cur.Y] = 3;
 				return false;
 			}
 			cur = tmp;
@@ -221,11 +250,11 @@ namespace MazeGenerator
 		static bool mu()
 		{
 			var tmp = new Point(cur.X, cur.Y - 2);
-			maze[cur.Y - 1][cur.X] = 0;
+			maze[cur.X][cur.Y - 1] = 0;
 			MadeVisited(tmp);
 			if (tmp == fin)
 			{
-				maze[cur.Y - 2][cur.X] = 3;
+				maze[cur.X][cur.Y - 2] = 3;
 				return false;
 			}
 			if (tmp == fin)
@@ -237,11 +266,11 @@ namespace MazeGenerator
 		static bool md()
 		{
 			var tmp = new Point(cur.X, cur.Y + 2);
-			maze[cur.Y + 1][cur.X] = 0;
+			maze[cur.X][cur.Y + 1] = 0;
 			MadeVisited(tmp);
 			if (tmp == fin)
 			{
-				maze[cur.Y + 2][cur.X] = 3;
+				maze[cur.X][cur.Y + 2] = 3;
 				return false;
 			}
 			cur = tmp;
@@ -252,11 +281,11 @@ namespace MazeGenerator
 		{
 			if (cur.X - 2 > 0 && !CheckVisit(new Point(cur.X - 2, cur.Y)))
 				neigh.Add(Directions.Left);
-			if (cur.X + 2 < M && !CheckVisit(new Point(cur.X + 2, cur.Y)))
+			if (cur.X + 2 < N && !CheckVisit(new Point(cur.X + 2, cur.Y)))
 				neigh.Add(Directions.Right);
 			if (cur.Y - 2 > 0 && !CheckVisit(new Point(cur.X, cur.Y - 2)))
 				neigh.Add(Directions.Up);
-			if (cur.Y + 2 < N && !CheckVisit(new Point(cur.X, cur.Y + 2)))
+			if (cur.Y + 2 < M && !CheckVisit(new Point(cur.X, cur.Y + 2)))
 				neigh.Add(Directions.Down);
 			if (neigh.Count > 1)
 				path.Push(cur);
@@ -278,7 +307,7 @@ namespace MazeGenerator
 		static bool CheckVisit(Point p)
 		{
 			int t = maze[p.X][p.Y];
-			return t == 0 || t == 2 || t ==3;
+			return t == 0 || t == 2 || t == 3;
 		}
 	}
 }
