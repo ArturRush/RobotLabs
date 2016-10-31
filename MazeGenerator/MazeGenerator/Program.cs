@@ -48,8 +48,8 @@ namespace MazeGenerator
 			////==============Хардкооооод!!!===========================
 			int freeWidth = 10;
 			int wallWidth = 5;
-			int mazeWidth = 150;
-			int mazeHeigth = 300;
+			int mazeWidth = 500;
+			int mazeHeigth = 500;
 			tmpN = mazeHeigth / (freeWidth + wallWidth);
 			tmpM = mazeWidth / (freeWidth + wallWidth);
 			N = 2 * tmpN + 1;
@@ -186,7 +186,7 @@ namespace MazeGenerator
 			using (StreamWriter f =
 			new StreamWriter(filePath + ".txt"))
 			{
-				f.Write(tmpN + " " + tmpM);
+				f.Write(tmpN + " " + tmpM + "\n");
 				for (int i = 0; i < mz.Count; ++i)
 				{
 					for (int j = 0; j < mz[0].Count; ++j)
@@ -219,6 +219,7 @@ namespace MazeGenerator
 				}
 			}
 			SaveAsPicture(res);
+			SaveAsText(res);
 		}
 
 		static bool ml()
