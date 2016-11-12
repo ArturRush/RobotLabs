@@ -10,24 +10,23 @@ public class MazeCtrl : MonoBehaviour
 	private List<List<int>> maze;
 	public GameObject block;
 	private GameObject floor;
-	public GameObject cam;	
+	public GameObject cam;
+	public GameObject robot;
 
 	// Use this for initialization
 	void Start()
 	{
-		string fileName = "test.txt";
+		string fileName = "C:\\lessons\\robots\\robotics\\test.txt";
 		maze = ReadMaze(fileName);
 		floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
 		floor.transform.localScale = new Vector3(maze.Count / 10f, 1, maze[0].Count / 10f);
 		floor.transform.position = new Vector3(maze.Count / 2f, 0, maze[0].Count / 2f);
-
 		var c = cam.GetComponent<Camera>();
 		c.orthographicSize = (maze.Count<maze[0].Count ? maze.Count : maze[0].Count)/2f;
 		c.rect = new Rect(new Vector2(0, 0), new Vector2(1, floor.transform.localScale.x / floor.transform.localScale.z));
 		cam.transform.position = new Vector3(maze.Count/2f, 10, maze[0].Count/2f);
-
+		robot.transform.position = new Vector3(maze.Count / 2f, 0.6f, maze[0].Count / 2f);
 		Vector2 size = new Vector2(0, 0);
-		Debug.Log("Загрузился");
 		for (int i = 0; i < maze.Count; ++i)
 		{
 			for (int j = 0; j < maze[i].Count; ++j)
