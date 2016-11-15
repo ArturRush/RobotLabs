@@ -11,50 +11,70 @@ public class RobotCtrl : MonoBehaviour
 	private bool collision;
 	public float moveBackTime;
 	private float mbTime;
+	private bool odd;
 	void Start()
 	{
+		odd = false;
 		collision = false;
 		mbTime = moveBackTime;
 	}
 
 	void Update()
 	{
-		if (Input.GetKey(KeyCode.A))
-		{
-			MoveLW(-lp);
-		}
-		if (Input.GetKey(KeyCode.Q))
-		{
-			MoveLW(lp);
-		}
-		if (Input.GetKey(KeyCode.E))
-		{
-			MoveRW(rp);
-		}
-		if (Input.GetKey(KeyCode.D))
-		{
-			MoveRW(-rp);
-		}
-		if (Input.GetKey(KeyCode.W))
-		{
-			MoveLW(lp);
-			MoveRW(rp);
-		}
-		if (Input.GetKey(KeyCode.S))
-		{
-			MoveLW(-lp);
-			MoveRW(-rp);
-		}
 		if (collision)
 		{
 			mbTime -= Time.deltaTime;
 			if (mbTime <= 0)
 			{
-				lp = 0;
-				rp = 0;
+				lp *= -1;
+				rp *= -1;
 				collision = false;
 				mbTime = moveBackTime;
 			}
+		}
+		if (Input.GetKey(KeyCode.A))
+		{
+			MoveLw(-lp);
+		}
+		if (Input.GetKey(KeyCode.Q))
+		{
+			MoveLw(lp);
+		}
+		if (Input.GetKey(KeyCode.E))
+		{
+			MoveRw(rp);
+		}
+		if (Input.GetKey(KeyCode.D))
+		{
+			MoveRw(-rp);
+		}
+		if (Input.GetKey(KeyCode.W))
+		{
+			if (odd)
+			{
+				MoveRw(rp);
+				MoveLw(lp);
+			}
+			else
+			{
+				MoveLw(lp);
+				MoveRw(rp);
+			}
+			odd = !odd;
+		}
+		if (Input.GetKey(KeyCode.S))
+		{
+			if (odd)
+			{
+				MoveRw(-rp);
+				MoveLw(-lp);
+			}
+			else
+			{
+				MoveLw(-lp);
+				MoveRw(-rp);
+			}
+			odd = !odd;
 		}
 	}
 
@@ -66,13 +86,12 @@ public class RobotCtrl : MonoBehaviour
 		collision = true;
 	}
 
-	public void MoveLW(float l)
+	public void MoveLw(float l)
 	{
 		transform.RotateAround(rw.transform.position, new Vector3(0, 1, 0), rotationSpeed * l);
-		
 	}
 
-	public void MoveRW(float r)
+	public void MoveRw(float r)
 	{
 		transform.RotateAround(lw.transform.position, new Vector3(0, 1, 0), -rotationSpeed * r);
 	}
