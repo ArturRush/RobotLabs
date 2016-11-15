@@ -1,66 +1,80 @@
-﻿using UnityEngine;
-using System.Collections;
+﻿using System;
+using UnityEngine;
 
 public class RobotCtrl : MonoBehaviour
 {
-	public float speed;
 	public float rotationSpeed;
 	public GameObject lw;
 	public GameObject rw;
-	private bool rotateLeft;
-	private bool rotateRight;
+	public float lp;
+	public float rp;
+	private bool collision;
+	public float moveBackTime;
+	private float mbTime;
 	void Start()
 	{
-		rotateLeft = true;
-		rotateRight = true;
+		collision = false;
+		mbTime = moveBackTime;
 	}
 
 	void Update()
 	{
-		if (Input.GetKeyDown(KeyCode.W))
+		if (Input.GetKey(KeyCode.A))
 		{
-			GetComponent<Rigidbody>().velocity = -transform.forward * speed;
-			//transform.position -= transform.forward * speed;
+			MoveLW(-lp);
 		}
-		if (Input.GetKeyUp(KeyCode.W))
+		if (Input.GetKey(KeyCode.Q))
 		{
-			GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+			MoveLW(lp);
 		}
-		if (Input.GetKeyDown(KeyCode.S))
+		if (Input.GetKey(KeyCode.E))
 		{
-			GetComponent<Rigidbody>().velocity = transform.forward * speed;
+			MoveRW(rp);
 		}
-		if (Input.GetKeyUp(KeyCode.S))
+		if (Input.GetKey(KeyCode.D))
 		{
-			GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+			MoveRW(-rp);
 		}
-		if (Input.GetKey(KeyCode.A) && rotateLeft)
+		if (Input.GetKey(KeyCode.W))
 		{
-			transform.RotateAround(lw.transform.position, new Vector3(0, 1, 0), -rotationSpeed);
-			if(Input.GetKey(KeyCode.W))
-				GetComponent<Rigidbody>().velocity = -transform.forward * speed;
+			MoveLW(lp);
+			MoveRW(rp);
 		}
-		if (Input.GetKey(KeyCode.D) && rotateRight)
+		if (Input.GetKey(KeyCode.S))
 		{
-			transform.RotateAround(rw.transform.position, new Vector3(0, 1, 0), rotationSpeed);
-			if (Input.GetKey(KeyCode.S))
-				GetComponent<Rigidbody>().velocity = transform.forward * speed;
+			MoveLW(-lp);
+			MoveRW(-rp);
+		}
+		if (collision)
+		{
+			mbTime -= Time.deltaTime;
+			if (mbTime <= 0)
+			{
+				lp = 0;
+				rp = 0;
+				collision = false;
+				mbTime = moveBackTime;
+			}
 		}
 	}
 
 	void OnTriggerEnter(Collider oth)
 	{
-		if (Input.GetKey(KeyCode.A))
-		rotateLeft = false;
-		if (Input.GetKey(KeyCode.D))
-			rotateRight = false;
-		GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
-		GetComponent<Rigidbody>().velocity = new Vector3(0, 0, 0);
+		if (collision) return;
+		lp *= -1;
+		rp *= -1;
+		collision = true;
 	}
 
-	void OnTriggerExit(Collider oth)
+	public void MoveLW(float l)
 	{
-		rotateLeft = true;
-		rotateRight = true;
+		transform.RotateAround(rw.transform.position, new Vector3(0, 1, 0), rotationSpeed * l);
+		
 	}
+
+	public void MoveRW(float r)
+	{
+		transform.RotateAround(lw.transform.position, new Vector3(0, 1, 0), -rotationSpeed * r);
+	}
+
 }
