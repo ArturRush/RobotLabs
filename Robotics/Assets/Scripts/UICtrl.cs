@@ -7,7 +7,6 @@ using UnityEngine.UI;
 public class UICtrl : MonoBehaviour
 {
 	public GameObject Robot;
-	private bool odd = false;
 	public Button lf;
 	public Button rf;
 	public Button lb;
@@ -101,6 +100,7 @@ public class UICtrl : MonoBehaviour
 		{
 			lp.GetComponent<Image>().sprite = lockedPic;
 			LockPower = true;
+			rs.value = ls.value;
 		}
 	}
 

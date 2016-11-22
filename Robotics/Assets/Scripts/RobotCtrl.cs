@@ -42,39 +42,9 @@ public class RobotCtrl : MonoBehaviour
 	{
 		if (collision)
 		{
-			move();
-		}
-
-		//Управление с клевиатуры
-		if (Input.GetKey(KeyCode.A))
-		{
-			MoveLB();
-			return;
-		}
-		if (Input.GetKey(KeyCode.Q))
-		{
-			MoveLF();
-			return;
-		}
-		if (Input.GetKey(KeyCode.E))
-		{
-			MoveRF();
-			return;
-		}
-		if (Input.GetKey(KeyCode.D))
-		{
-			MoveRB();
-			return;
-		}
-		if (Input.GetKey(KeyCode.W))
-		{
-			MoveF();
-			return;
-		}
-		if (Input.GetKey(KeyCode.S))
-		{
-			MoveB();
-			return;
+			//Юнити не может в Invoke, не оптимизировать!
+			if(move!=null)
+				move();
 		}
 	}
 

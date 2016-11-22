@@ -1,6 +1,5 @@
 ﻿using System;
 using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -18,14 +17,25 @@ public class MazeCtrl : MonoBehaviour
 	{
 		string fileName = "test.txt";
 		maze = ReadMaze(fileName);
+		//Константы выбраны исходя из размеров одной клетки лабиринта
 		floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
 		floor.transform.localScale = new Vector3(maze.Count / 10f, 1, maze[0].Count / 10f);
 		floor.transform.position = new Vector3(maze.Count / 2f, 0, maze[0].Count / 2f);
+
+		//Настраиваем положение камеры
 		var c = cam.GetComponent<Camera>();
-		c.orthographicSize = (maze.Count<maze[0].Count ? maze.Count : maze[0].Count)/2f;
-		c.rect = new Rect(new Vector2(0, 0), new Vector2(1, floor.transform.localScale.x / floor.transform.localScale.z));
-		cam.transform.position = new Vector3(maze.Count/2f, 10, maze[0].Count/2f);
-		robot.transform.position = new Vector3(maze.Count / 2f, 0.6f, maze[0].Count / 2f);
+		if (floor.transform.localScale.x < floor.transform.localScale.z)
+		{
+			c.orthographicSize = (maze.Count < maze[0].Count ? maze.Count : maze[0].Count) / 2f;
+			c.rect = new Rect(new Vector2(0, 0.5f - floor.transform.localScale.x / floor.transform.localScale.z / 2f), new Vector2(1, floor.transform.localScale.x / floor.transform.localScale.z));
+		}
+		else
+		{
+			c.orthographicSize = (maze.Count > maze[0].Count ? maze.Count : maze[0].Count) / 2f;
+			c.rect = new Rect(new Vector2(0, 0), new Vector2(floor.transform.localScale.x / floor.transform.localScale.z, 1));
+		}
+		cam.transform.position = new Vector3(maze.Count / 2f, 10, maze[0].Count / 2f);
+		//Заполняем лабиринт стенами
 		Vector2 size = new Vector2(0, 0);
 		for (int i = 0; i < maze.Count; ++i)
 		{
@@ -48,7 +58,7 @@ public class MazeCtrl : MonoBehaviour
 					bool r = true;//Не знаю как назвать, но означает, что следующая строка тоже подходит
 					while (r)
 					{
-						if (i + (int) size.x == maze.Count) break;
+						if (i + (int)size.x == maze.Count) break;
 						for (int k = j; k < j + size.y; ++k)
 						{
 							if (maze[i + (int)size.x][k] != 1)
@@ -66,10 +76,23 @@ public class MazeCtrl : MonoBehaviour
 					}
 					var b = (GameObject)Instantiate(block, new Vector3(i + size.x / 2f, maze[i][j] / 4f, j + size.y / 2f), Quaternion.Euler(0, 0, 0));
 					b.transform.parent = transform;
-					b.transform.localScale = new Vector3(size.x, maze[i][j]/2f, size.y);
+					b.transform.localScale = new Vector3(size.x, maze[i][j] / 2f, size.y);
 				}
 			}
 		}
+		//Ищем самую левую нижнюю свободную клетку
+		for (int i = maze.Count - 1; i >= 0; --i)
+			for (int j = 0; j < maze[0].Count; j++)
+			{
+				if (maze[i][j] == 0)
+				{
+					//Ставим робота на место
+					robot.transform.position = new Vector3(i - robot.transform.localScale.z / 2f + 1, 0.6f, j + robot.transform.localScale.x / 2f);
+					//для выхода из циклов
+					i = -1;
+					j = maze[0].Count;
+				}
+			}
 	}
 
 	List<List<int>> ReadMaze(string fileName)
