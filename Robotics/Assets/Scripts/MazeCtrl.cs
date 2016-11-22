@@ -16,7 +16,7 @@ public class MazeCtrl : MonoBehaviour
 	// Use this for initialization
 	void Start()
 	{
-		string fileName = "C:\\lessons\\robots\\robotics\\test.txt";
+		string fileName = "test.txt";
 		maze = ReadMaze(fileName);
 		floor = GameObject.CreatePrimitive(PrimitiveType.Plane);
 		floor.transform.localScale = new Vector3(maze.Count / 10f, 1, maze[0].Count / 10f);
@@ -70,12 +70,6 @@ public class MazeCtrl : MonoBehaviour
 				}
 			}
 		}
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-
 	}
 
 	List<List<int>> ReadMaze(string fileName)
