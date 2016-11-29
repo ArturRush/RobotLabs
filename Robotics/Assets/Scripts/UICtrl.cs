@@ -40,7 +40,7 @@ public class UICtrl : MonoBehaviour
 		Robot.GetComponent<RobotCtrl>().Lp = ls.value;
 		Robot.GetComponent<RobotCtrl>().Rp = rs.value;
 	}
-	
+
 	public void Update()
 	{
 		if (Input.GetKey(KeyCode.Mouse0))

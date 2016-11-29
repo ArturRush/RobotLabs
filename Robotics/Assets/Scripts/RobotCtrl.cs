@@ -7,6 +7,14 @@ public class RobotCtrl : MonoBehaviour
 	public float rotationSpeed;
 	public GameObject lw;//Левое колесо
 	public GameObject rw;//Правое колесо
+	public GameObject leftSensor;
+	public GameObject rightSensor;
+	public GameObject lsEnd;
+	public GameObject rsEnd;
+	public float leftDist;
+	public float rightDist;
+
+	private Vector3 prevPos;
 
 	private float lp;
 	/// <summary>
@@ -31,26 +39,55 @@ public class RobotCtrl : MonoBehaviour
 	private bool collision;//Есть ли столкновение с препятствием?
 	private bool odd;//Четный шаг выполнения движения
 	private Action move;
-	
+
 	void Start()
 	{
 		odd = false;
 		collision = false;
+		prevPos = transform.position;
 	}
 
 	void Update()
 	{
+		//Обработка датчиков
+		RaycastHit hit;
+		Ray leftRay = new Ray(leftSensor.transform.position, lsEnd.transform.position - leftSensor.transform.position);
+		Ray rightRay = new Ray(rightSensor.transform.position, rsEnd.transform.position - rightSensor.transform.position);
+		if (Physics.Raycast(leftRay, out hit, 6))
+		{
+			//Debug.Log("LeftSensor: " + Vector3.Distance(hit.point, leftSensor.transform.position) + " " + hit.collider.gameObject.name);
+			//Debug.DrawLine(hit.point, leftRay.origin, Color.red);
+			leftDist = Vector3.Distance(hit.point, leftSensor.transform.position);
+		}
+		else
+		{
+			leftDist = 0;
+		}
+		if (Physics.Raycast(rightRay, out hit, 6))
+		{
+			//Debug.Log("RightSensor: " + Vector3.Distance(hit.point, rightSensor.transform.position) + " " + hit.collider.gameObject.name);
+			//Debug.DrawLine(hit.point, rightRay.origin, Color.green);
+			rightDist = Vector3.Distance(hit.point, rightSensor.transform.position);
+		}
+		else
+		{
+			rightDist = 0;
+		}
+
+		//Если врезался
 		if (collision)
 		{
 			//Юнити не может в Invoke, не оптимизировать!
-			if(move!=null)
+			if (move != null)
 				move();
 		}
+		if (prevPos != transform.position)
+			prevPos = transform.position;
 	}
 
 	void OnTriggerEnter(Collider oth)
 	{
-		if (collision) return;
+		if (collision || oth.CompareTag("Finish")) return;
 		collision = true;
 	}
 
@@ -101,38 +138,88 @@ public class RobotCtrl : MonoBehaviour
 	/// </summary>
 	public void MoveF()
 	{
-		if (!collision)
-			move = MoveB;
-		if (odd)
+		if (rotationSpeed <= 10)
 		{
-			MoveRw(rp);
-			MoveLw(lp);
+			if (!collision)
+				move = MoveB;
+			if (odd)
+			{
+				MoveRw(rp);
+				MoveLw(lp);
+			}
+			else
+			{
+				MoveLw(lp);
+				MoveRw(rp);
+			}
+			odd = !odd;
 		}
 		else
 		{
-			MoveLw(lp);
-			MoveRw(rp);
+			//Выпрямление траектории
+			rotationSpeed /= 20f;
+			for (int i = 0; i < 20; ++i)
+			{
+				if (!collision)
+					move = MoveB;
+				if (odd)
+				{
+					MoveRw(rp);
+					MoveLw(lp);
+				}
+				else
+				{
+					MoveLw(lp);
+					MoveRw(rp);
+				}
+				odd = !odd;
+			}
+			rotationSpeed *= 20f;
 		}
-		odd = !odd;
 	}
 	/// <summary>
 	/// Ехать назад
 	/// </summary>
 	public void MoveB()
 	{
-		if (!collision)
-			move = MoveF;
-		if (odd)
+		if (rotationSpeed <= 10)
 		{
-			MoveRw(-rp);
-			MoveLw(-lp);
+			if (!collision)
+				move = MoveF;
+			if (odd)
+			{
+				MoveRw(-rp);
+				MoveLw(-lp);
+			}
+			else
+			{
+				MoveLw(-lp);
+				MoveRw(-rp);
+			}
+			odd = !odd;
 		}
 		else
 		{
-			MoveLw(-lp);
-			MoveRw(-rp);
+			//Выпрямление траектории
+			rotationSpeed /= 20f;
+			for (int i = 0; i < 20; ++i)
+			{
+				if (!collision)
+					move = MoveF;
+				if (odd)
+				{
+					MoveRw(-rp);
+					MoveLw(-lp);
+				}
+				else
+				{
+					MoveLw(-lp);
+					MoveRw(-rp);
+				}
+				odd = !odd;
+			}
+			rotationSpeed *= 20f;
 		}
-		odd = !odd;
 	}
 
 	private void MoveLw(float l)
@@ -144,5 +231,4 @@ public class RobotCtrl : MonoBehaviour
 	{
 		transform.RotateAround(lw.transform.position, new Vector3(0, 1, 0), -rotationSpeed * r);
 	}
-
 }

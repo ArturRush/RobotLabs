@@ -8,6 +8,7 @@ public class MazeCtrl : MonoBehaviour
 {
 	private List<List<int>> maze;
 	public GameObject block;
+	public GameObject finblock;
 	private GameObject floor;
 	public GameObject cam;
 	public GameObject robot;
@@ -78,6 +79,43 @@ public class MazeCtrl : MonoBehaviour
 					b.transform.parent = transform;
 					b.transform.localScale = new Vector3(size.x, maze[i][j] / 2f, size.y);
 				}
+				if (maze[i][j] == 3)
+				{
+					size.x = 0;
+					size.y = 0;
+					for (int k = j; k < maze[0].Count; ++k)
+					{
+						maze[i][k] = 4;
+						if (k + 1 == maze[0].Count || maze[i][k + 1] != 3)
+						{
+							size.y = k + 1 - j;
+							size.x = 1;
+							break;
+						}
+					}
+					bool r = true;//Не знаю как назвать, но означает, что следующая строка тоже подходит
+					while (r)
+					{
+						if (i + (int)size.x == maze.Count) break;
+						for (int k = j; k < j + size.y; ++k)
+						{
+							if (maze[i + (int)size.x][k] != 3)
+							{
+								r = false;
+								break;
+							}
+						}
+						if (!r) break;
+						for (int k = j; k < j + size.y; ++k)
+						{
+							maze[i + (int)size.x][k] = 4;
+						}
+						size.x += 1;
+					}
+					var fb = (GameObject)Instantiate(finblock, new Vector3(i + size.x / 2f, maze[i][j] / 4f, j + size.y / 2f), Quaternion.Euler(0, 0, 0));
+					fb.transform.parent = transform;
+					fb.transform.localScale = new Vector3(size.x, maze[i][j] / 2f, size.y);
+				}
 			}
 		}
 		//Ищем самую левую нижнюю свободную клетку
@@ -87,7 +125,7 @@ public class MazeCtrl : MonoBehaviour
 				if (maze[i][j] == 0)
 				{
 					//Ставим робота на место
-					robot.transform.position = new Vector3(i - robot.transform.localScale.z / 2f + 1, 0.6f, j + robot.transform.localScale.x / 2f);
+					robot.transform.position = new Vector3(i - robot.transform.localScale.z / 2f, 0.6f, j + robot.transform.localScale.x / 2f+1);
 					//для выхода из циклов
 					i = -1;
 					j = maze[0].Count;
