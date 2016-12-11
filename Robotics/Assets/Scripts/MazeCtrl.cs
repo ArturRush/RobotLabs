@@ -125,7 +125,7 @@ public class MazeCtrl : MonoBehaviour
 				if (maze[i][j] == 0)
 				{
 					//Ставим робота на место
-					robot.transform.position = new Vector3(i - robot.transform.localScale.z / 2f, 0.6f, j + robot.transform.localScale.x / 2f+1);
+					robot.transform.position = new Vector3(i - robot.transform.localScale.z / 2f-2, 0.6f, j + robot.transform.localScale.x / 2f+3);
 					//для выхода из циклов
 					i = -1;
 					j = maze[0].Count;

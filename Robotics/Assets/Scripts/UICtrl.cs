@@ -13,6 +13,8 @@ public class UICtrl : MonoBehaviour
 	public Button rb;
 	public Button f;
 	public Button b;
+	public Text aiText;
+	public GameObject AI;
 
 	private bool LockPower;
 	private bool LockDirection;
@@ -128,5 +130,11 @@ public class UICtrl : MonoBehaviour
 			b.gameObject.SetActive(true);
 			rb.gameObject.SetActive(false);
 		}
+	}
+
+	public void AiButtonClick()
+	{
+		aiText.text = AI.GetComponent<AIScript>().working ? "Start AI" : "Stop AI";
+		AI.GetComponent<AIScript>().working = !AI.GetComponent<AIScript>().working;
 	}
 }

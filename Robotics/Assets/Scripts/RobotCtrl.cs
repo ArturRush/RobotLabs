@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Assertions.Comparers;
 using UnityEngine.EventSystems;
 
 public class RobotCtrl : MonoBehaviour
@@ -36,7 +37,7 @@ public class RobotCtrl : MonoBehaviour
 		set { rp = Mathf.Clamp(value, -1.0f, 1.0f); }
 	}
 
-	private bool collision;//Есть ли столкновение с препятствием?
+	public bool collision;//Есть ли столкновение с препятствием?
 	private bool odd;//Четный шаг выполнения движения
 	private Action move;
 
@@ -53,25 +54,21 @@ public class RobotCtrl : MonoBehaviour
 		RaycastHit hit;
 		Ray leftRay = new Ray(leftSensor.transform.position, lsEnd.transform.position - leftSensor.transform.position);
 		Ray rightRay = new Ray(rightSensor.transform.position, rsEnd.transform.position - rightSensor.transform.position);
-		if (Physics.Raycast(leftRay, out hit, 6))
+		if (Physics.Raycast(leftRay, out hit, 6) && !hit.collider.CompareTag("Finish"))
 		{
-			//Debug.Log("LeftSensor: " + Vector3.Distance(hit.point, leftSensor.transform.position) + " " + hit.collider.gameObject.name);
-			//Debug.DrawLine(hit.point, leftRay.origin, Color.red);
 			leftDist = Vector3.Distance(hit.point, leftSensor.transform.position);
 		}
 		else
 		{
-			leftDist = 0;
+			leftDist = 1000;
 		}
-		if (Physics.Raycast(rightRay, out hit, 6))
+		if (Physics.Raycast(rightRay, out hit, 6) && !hit.collider.CompareTag("Finish"))
 		{
-			//Debug.Log("RightSensor: " + Vector3.Distance(hit.point, rightSensor.transform.position) + " " + hit.collider.gameObject.name);
-			//Debug.DrawLine(hit.point, rightRay.origin, Color.green);
 			rightDist = Vector3.Distance(hit.point, rightSensor.transform.position);
 		}
 		else
 		{
-			rightDist = 0;
+			rightDist = 1000;
 		}
 
 		//Если врезался
