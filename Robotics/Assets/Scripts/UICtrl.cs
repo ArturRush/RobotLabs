@@ -7,25 +7,25 @@ using UnityEngine.UI;
 public class UICtrl : MonoBehaviour
 {
 	public GameObject Robot;
-	public Button lf;
-	public Button rf;
-	public Button lb;
-	public Button rb;
-	public Button f;
-	public Button b;
+	public Button lfButton;
+	public Button rfButton;
+	public Button lbButton;
+	public Button rbButton;
+	public Button fButton;
+	public Button bButton;
 	public Text aiText;
 	public GameObject AI;
 
 	private bool LockPower;
 	private bool LockDirection;
 
-	public Button lp;
-	public Button ld;
+	public Button LockPowerButton;
+	public Button LockDirectionButton;
 
-	public Slider ls;
-	public Slider rs;
-	public Text lt;
-	public Text rt;
+	public Slider LeftPowerSlider;
+	public Slider RightPowerSlider;
+	public Text LeftPowerText;
+	public Text RightPowerText;
 
 	public Sprite lockedPic;
 	public Sprite unLockedPic;
@@ -34,42 +34,42 @@ public class UICtrl : MonoBehaviour
 
 	public void Start()
 	{
-		f.gameObject.SetActive(false);
-		b.gameObject.SetActive(false);
-		lt.text = ls.value.ToString("0.0");
-		rt.text = rs.value.ToString("0.0");
+		fButton.gameObject.SetActive(false);
+		bButton.gameObject.SetActive(false);
+		LeftPowerText.text = LeftPowerSlider.value.ToString("0.0");
+		RightPowerText.text = RightPowerSlider.value.ToString("0.0");
 
-		Robot.GetComponent<RobotCtrl>().Lp = ls.value;
-		Robot.GetComponent<RobotCtrl>().Rp = rs.value;
+		Robot.GetComponent<RobotCtrl>().LeftPower = LeftPowerSlider.value;
+		Robot.GetComponent<RobotCtrl>().RightPower = RightPowerSlider.value;
 	}
 
 	public void Update()
 	{
 		if (Input.GetKey(KeyCode.Mouse0))
 		{
-			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == lf.gameObject)
+			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == lfButton.gameObject)
 			{
-				Robot.GetComponent<RobotCtrl>().MoveLF();
+				Robot.GetComponent<RobotCtrl>().MoveLeftForward();
 			}
-			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == rf.gameObject)
+			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == rfButton.gameObject)
 			{
-				Robot.GetComponent<RobotCtrl>().MoveRF();
+				Robot.GetComponent<RobotCtrl>().MoveRightForward();
 			}
-			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == lb.gameObject)
+			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == lbButton.gameObject)
 			{
-				Robot.GetComponent<RobotCtrl>().MoveLB();
+				Robot.GetComponent<RobotCtrl>().MoveLeftBack();
 			}
-			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == rb.gameObject)
+			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == rbButton.gameObject)
 			{
-				Robot.GetComponent<RobotCtrl>().MoveRB();
+				Robot.GetComponent<RobotCtrl>().MoveRightBack();
 			}
-			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == f.gameObject)
+			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == fButton.gameObject)
 			{
-				Robot.GetComponent<RobotCtrl>().MoveF();
+				Robot.GetComponent<RobotCtrl>().MoveForward();
 			}
-			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == b.gameObject)
+			if (eventSys.GetComponent<EventSystem>().currentSelectedGameObject == bButton.gameObject)
 			{
-				Robot.GetComponent<RobotCtrl>().MoveB();
+				Robot.GetComponent<RobotCtrl>().MoveBack();
 			}
 		}
 
@@ -77,32 +77,32 @@ public class UICtrl : MonoBehaviour
 
 	public void LeftSliderChanged()
 	{
-		Robot.GetComponent<RobotCtrl>().Lp = ls.value;
-		lt.text = ls.value.ToString("0.0", CultureInfo.InvariantCulture);
+		Robot.GetComponent<RobotCtrl>().LeftPower = LeftPowerSlider.value;
+		LeftPowerText.text = LeftPowerSlider.value.ToString("0.0", CultureInfo.InvariantCulture);
 		if (LockPower)
-			rs.value = ls.value;
+			RightPowerSlider.value = LeftPowerSlider.value;
 	}
 
 	public void RightSliderChanged()
 	{
-		Robot.GetComponent<RobotCtrl>().Rp = rs.value;
-		rt.text = rs.value.ToString("0.0", CultureInfo.InvariantCulture);
+		Robot.GetComponent<RobotCtrl>().RightPower = RightPowerSlider.value;
+		RightPowerText.text = RightPowerSlider.value.ToString("0.0", CultureInfo.InvariantCulture);
 		if (LockPower)
-			ls.value = rs.value;
+			LeftPowerSlider.value = RightPowerSlider.value;
 	}
 
 	public void lpClick()
 	{
 		if (LockPower)
 		{
-			lp.GetComponent<Image>().sprite = unLockedPic;
+			LockPowerButton.GetComponent<Image>().sprite = unLockedPic;
 			LockPower = false;
 		}
 		else
 		{
-			lp.GetComponent<Image>().sprite = lockedPic;
+			LockPowerButton.GetComponent<Image>().sprite = lockedPic;
 			LockPower = true;
-			rs.value = ls.value;
+			RightPowerSlider.value = LeftPowerSlider.value;
 		}
 	}
 
@@ -110,25 +110,25 @@ public class UICtrl : MonoBehaviour
 	{
 		if (LockDirection)
 		{
-			ld.GetComponent<Image>().sprite = unLockedPic;
+			LockDirectionButton.GetComponent<Image>().sprite = unLockedPic;
 			LockDirection = false;
-			lf.gameObject.SetActive(true);
-			f.gameObject.SetActive(false);
-			rf.gameObject.SetActive(true);
-			lb.gameObject.SetActive(true);
-			b.gameObject.SetActive(false);
-			rb.gameObject.SetActive(true);
+			lfButton.gameObject.SetActive(true);
+			fButton.gameObject.SetActive(false);
+			rfButton.gameObject.SetActive(true);
+			lbButton.gameObject.SetActive(true);
+			bButton.gameObject.SetActive(false);
+			rbButton.gameObject.SetActive(true);
 		}
 		else
 		{
-			ld.GetComponent<Image>().sprite = lockedPic;
+			LockDirectionButton.GetComponent<Image>().sprite = lockedPic;
 			LockDirection = true;
-			lf.gameObject.SetActive(false);
-			f.gameObject.SetActive(true);
-			rf.gameObject.SetActive(false);
-			lb.gameObject.SetActive(false);
-			b.gameObject.SetActive(true);
-			rb.gameObject.SetActive(false);
+			lfButton.gameObject.SetActive(false);
+			fButton.gameObject.SetActive(true);
+			rfButton.gameObject.SetActive(false);
+			lbButton.gameObject.SetActive(false);
+			bButton.gameObject.SetActive(true);
+			rbButton.gameObject.SetActive(false);
 		}
 	}
 

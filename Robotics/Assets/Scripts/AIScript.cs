@@ -11,23 +11,23 @@ public class AIScript : MonoBehaviour
 	{
 		working = false;
 		robot = Robot.GetComponent<RobotCtrl>();
-		robot.Lp = 1;
-		robot.Rp = 1;
+		robot.LeftPower = 1;
+		robot.RightPower = 1;
 	}
 	
 	void Update()
 	{
 		if (!working) return;
-		robot.Lp = 1;
-		robot.Rp = 1;
+		robot.LeftPower = 1;
+		robot.RightPower = 1;
 		if (robot.rightDist > 6 && !robot.collision)
 		{
-			robot.MoveLF();
+			robot.MoveLeftForward();
 		}
 		else
 		{
-			robot.MoveRF();
-			robot.MoveRF();
+			robot.MoveRightForward();
+			robot.MoveRightForward();
 		}
 	}
 }

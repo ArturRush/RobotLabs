@@ -6,35 +6,35 @@ using UnityEngine.EventSystems;
 public class RobotCtrl : MonoBehaviour
 {
 	public float rotationSpeed;
-	public GameObject lw;//Левое колесо
-	public GameObject rw;//Правое колесо
+	public GameObject LeftWheel;//Левое колесо
+	public GameObject RightWheel;//Правое колесо
 	public GameObject leftSensor;
 	public GameObject rightSensor;
-	public GameObject lsEnd;
-	public GameObject rsEnd;
+	public GameObject lsEnd;//Позиция конца левого сенсора
+	public GameObject rsEnd;//Позиция конца правого сенсора
 	public float leftDist;
 	public float rightDist;
 
 	private Vector3 prevPos;
 
-	private float lp;
+	private float _leftPower;
 	/// <summary>
 	/// Мощность левого колеса
 	/// </summary>
-	public float Lp
+	public float LeftPower
 	{
-		get { return lp; }
-		set { lp = Mathf.Clamp(value, -1.0f, 1.0f); }
+		get { return _leftPower; }
+		set { _leftPower = Mathf.Clamp(value, -1.0f, 1.0f); }
 	}
 
-	private float rp;
+	private float _rightPower;
 	/// <summary>
 	/// Мощность правого колеса
 	/// </summary>
-	public float Rp
+	public float RightPower
 	{
-		get { return rp; }
-		set { rp = Mathf.Clamp(value, -1.0f, 1.0f); }
+		get { return _rightPower; }
+		set { _rightPower = Mathf.Clamp(value, -1.0f, 1.0f); }
 	}
 
 	public bool collision;//Есть ли столкновение с препятствием?
@@ -97,57 +97,57 @@ public class RobotCtrl : MonoBehaviour
 	/// <summary>
 	/// Ехать вперед левым колесом
 	/// </summary>
-	public void MoveLF()
+	public void MoveLeftForward()
 	{
 		if (!collision)
-			move = MoveLB;
-		MoveLw(lp);
+			move = MoveLeftBack;
+		MoveLeftWheel(_leftPower);
 	}
 	/// <summary>
 	/// Ехать вперед правым колесом
 	/// </summary>
-	public void MoveRF()
+	public void MoveRightForward()
 	{
 		if (!collision)
-			move = MoveRB;
-		MoveRw(rp);
+			move = MoveRightBack;
+		MoveRightWheel(_rightPower);
 	}
 	/// <summary>
 	/// Ехать назад левым колесом
 	/// </summary>
-	public void MoveLB()
+	public void MoveLeftBack()
 	{
 		if (!collision)
-			move = MoveLF;
-		MoveLw(-lp);
+			move = MoveLeftForward;
+		MoveLeftWheel(-_leftPower);
 	}
 	/// <summary>
 	/// Ехать назад правым колесом
 	/// </summary>
-	public void MoveRB()
+	public void MoveRightBack()
 	{
 		if (!collision)
-			move = MoveRF;
-		MoveRw(-rp);
+			move = MoveRightForward;
+		MoveRightWheel(-_rightPower);
 	}
 	/// <summary>
 	/// Ехать вперед
 	/// </summary>
-	public void MoveF()
+	public void MoveForward()
 	{
 		if (rotationSpeed <= 10)
 		{
 			if (!collision)
-				move = MoveB;
+				move = MoveBack;
 			if (odd)
 			{
-				MoveRw(rp);
-				MoveLw(lp);
+				MoveRightWheel(_rightPower);
+				MoveLeftWheel(_leftPower);
 			}
 			else
 			{
-				MoveLw(lp);
-				MoveRw(rp);
+				MoveLeftWheel(_leftPower);
+				MoveRightWheel(_rightPower);
 			}
 			odd = !odd;
 		}
@@ -158,16 +158,16 @@ public class RobotCtrl : MonoBehaviour
 			for (int i = 0; i < 20; ++i)
 			{
 				if (!collision)
-					move = MoveB;
+					move = MoveBack;
 				if (odd)
 				{
-					MoveRw(rp);
-					MoveLw(lp);
+					MoveRightWheel(_rightPower);
+					MoveLeftWheel(_leftPower);
 				}
 				else
 				{
-					MoveLw(lp);
-					MoveRw(rp);
+					MoveLeftWheel(_leftPower);
+					MoveRightWheel(_rightPower);
 				}
 				odd = !odd;
 			}
@@ -177,21 +177,21 @@ public class RobotCtrl : MonoBehaviour
 	/// <summary>
 	/// Ехать назад
 	/// </summary>
-	public void MoveB()
+	public void MoveBack()
 	{
 		if (rotationSpeed <= 10)
 		{
 			if (!collision)
-				move = MoveF;
+				move = MoveForward;
 			if (odd)
 			{
-				MoveRw(-rp);
-				MoveLw(-lp);
+				MoveRightWheel(-_rightPower);
+				MoveLeftWheel(-_leftPower);
 			}
 			else
 			{
-				MoveLw(-lp);
-				MoveRw(-rp);
+				MoveLeftWheel(-_leftPower);
+				MoveRightWheel(-_rightPower);
 			}
 			odd = !odd;
 		}
@@ -202,16 +202,16 @@ public class RobotCtrl : MonoBehaviour
 			for (int i = 0; i < 20; ++i)
 			{
 				if (!collision)
-					move = MoveF;
+					move = MoveForward;
 				if (odd)
 				{
-					MoveRw(-rp);
-					MoveLw(-lp);
+					MoveRightWheel(-_rightPower);
+					MoveLeftWheel(-_leftPower);
 				}
 				else
 				{
-					MoveLw(-lp);
-					MoveRw(-rp);
+					MoveLeftWheel(-_leftPower);
+					MoveRightWheel(-_rightPower);
 				}
 				odd = !odd;
 			}
@@ -219,13 +219,13 @@ public class RobotCtrl : MonoBehaviour
 		}
 	}
 
-	private void MoveLw(float l)
+	private void MoveLeftWheel(float l)
 	{
-		transform.RotateAround(rw.transform.position, new Vector3(0, 1, 0), rotationSpeed * l);
+		transform.RotateAround(RightWheel.transform.position, new Vector3(0, 1, 0), rotationSpeed * l);
 	}
 
-	private void MoveRw(float r)
+	private void MoveRightWheel(float r)
 	{
-		transform.RotateAround(lw.transform.position, new Vector3(0, 1, 0), -rotationSpeed * r);
+		transform.RotateAround(LeftWheel.transform.position, new Vector3(0, 1, 0), -rotationSpeed * r);
 	}
 }

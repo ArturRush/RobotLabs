@@ -46,10 +46,10 @@ namespace MazeGenerator
 			//Int32.TryParse(Console.ReadLine(), out a);
 			//fin.Y = a * 2 + 1;
 			////==============Хардкооооод!!!===========================
-			int freeWidth = 20;
-			int wallWidth = 10;
-			int mazeWidth = 500;
-			int mazeHeigth = 500;
+			int freeWidth = 30;
+			int wallWidth = 15;
+			int mazeWidth = 400;
+			int mazeHeigth = 400;
 			tmpN = mazeHeigth / (freeWidth + wallWidth);
 			tmpM = mazeWidth / (freeWidth + wallWidth);
 			N = 2 * tmpN + 1;
